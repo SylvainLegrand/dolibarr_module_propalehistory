@@ -175,13 +175,30 @@
 			$propale->statut = 0;
 			$object->statut = 0;
 
+            // keep parent lines from proposal to restore
+            $proposalLineNumFromIdList = array();
+            $proposalParentLineNumList = array();
+            foreach($propale->lines as $lineNum => $line) {
+                $proposalLineNumFromIdList[$line->id] = $lineNum;
+
+                $parentLineId = $line->fk_parent_line;
+                if ($parentLineId > 0 && isset($proposalLineNumFromIdList[$parentLineId])) {
+                    $proposalParentLineNumList[$lineNum] = $proposalLineNumFromIdList[$parentLineId];
+                }
+            }
+
 			foreach($object->lines as $line) {
-
-				$object->deleteline($line->rowid)."<br />";
-
+				$object->deleteline($line->rowid);
 			}
 
-			foreach($propale->lines as $line) {
+            $newProposalLineIdList = array();
+            foreach($propale->lines as $lineNum => $line) {
+                // get new parent line id from parent line num
+                $parentLineNum = isset($proposalParentLineNumList[$lineNum]) ? $proposalParentLineNumList[$lineNum] : -1;
+                $newProposalLineParentId = $line->fk_parent_line;
+                if (isset($newProposalLineIdList[$parentLineNum])) {
+                    $newProposalLineParentId = $newProposalLineIdList[$parentLineNum];
+                }
 
 				$object->addline(
 					$line->desc,
@@ -198,7 +215,7 @@
 					$line->product_type,
 					$line->rang,
 					$line->special_code,
-					$line->fk_parent_line,
+                    $newProposalLineParentId,
 					$line->fk_fournprice,
 					$line->pa_ht,
 					$line->label,
@@ -207,6 +224,7 @@
 					$line->array_options
 				);
 
+                $newProposalLineIdList[$lineNum] = $object->line->id;
 			}
 
 			if (method_exists($object, 'set_draft')) $object->set_draft($user); // Pour pouvoir modifier les dates, le statut doit être à 0
