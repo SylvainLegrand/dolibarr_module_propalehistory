@@ -163,6 +163,13 @@
 			return $object->generateDocument($conf->global->PROPALE_ADDON_PDF, $langs, 0, 0, 0);
 		}
 
+        /**
+         * Restore a proposal
+         *
+         * @param   PDO     $PDOdb      Database connection
+         * @param   Propal  $object     Proposal object
+         * @return  void
+         */
 		static function restaurerPropale(&$PDOdb, &$object) {
 
 			global $db, $user,$langs;
@@ -227,6 +234,9 @@
                 $newProposalLineIdList[$lineNum] = $object->line->id;
 			}
 
+            // set extra fields before update
+            $object->array_options = $propale->array_options;
+
 			if (method_exists($object, 'set_draft')) $object->set_draft($user); // Pour pouvoir modifier les dates, le statut doit être à 0
 			else $object->setDraft($user);
 
@@ -242,6 +252,10 @@
 			$object->set_demand_reason($user, $propale->demand_reason_id);
 			$object->setPaymentMethods($propale->mode_reglement_id);
 			$object->setPaymentTerms($propale->cond_reglement_id);
+            // update public note
+            $object->update_note($propale->note_public, '_public');
+            // update extra fields
+            $object->insertExtraFields();
 			$object->valid($user,1);
 			$object->fetch($object->id); //reload for generatePDF
 			self::generatePDF($object);
