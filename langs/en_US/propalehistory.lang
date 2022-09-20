@@ -1,28 +1,32 @@
 Module104090Name = Propale-History
 Module104090Desc = This module allows you to historize versions of proposals
-HistoryVersionSuccessfullDelete = Version was deleted successfully
-HistoryVersionSuccessfullArchived = Version proposal archived successfully
-HistoryVersionSuccessfullRestored = Version proposal successfully restored
-AbricotNotFound=Free module Abricot needed here. Please download
 
-PROPALEHISTORY_AUTO_ARCHIVE_DESC = Automatically archive a sales proposal when it is validated
-PROPALEHISTORY_SHOW_VERSION_PDF_DESC = Display version number on the PDF (from the 2nd version)
-PROPALEHISTORY_HIDE_VERSION_ON_TABS_DESC = Hide version number on tabs
-
-AutoArchive=Automatically archive a proposal when it is validated
-PROPALEHISTORY_SHOW_VERSION_PDF=Show the version number on the PDF (from page 2 and next)
+AbricotNotFound = Free module Abricot needed here. Please download
 
 ArchiveProposal=Archive proposal
 ArchiveProposalCheckboxLabel=Archiver the proposal?
+AutoArchive=Automatically archive a proposal when it is validated
+
 ConfirmModifyProposal=Confirm the modification of proposal
-PROPALEHISTORY_ARCHIVE_ON_MODIFY=Ask archiving when modifying a proposal
-PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth=Archiving at validation and modification can not be used at the same time.
 
-PROPALEHISTORY_ARCHIVE_PDF_TOO=Archive the PDF too
-PROPALEHISTORY_HIDE_VERSION_ON_TABS=Hide version number in tabs
+HistoryVersionSuccessfullArchived = Version proposal archived successfully
+HistoryVersionSuccessfullDelete   = Version was deleted successfully
+HistoryVersionSuccessfullRestored = Version proposal successfully restored
 
-ReturnInitialVersion=Return initial version
-PropaleHistoryArchiver=Archive
-Visualiser=Show
-Restaurer=Restore
+PROPALEHISTORY_ARCHIVE_ON_MODIFY = Ask archiving when modifying a proposal
+PROPALEHISTORY_ARCHIVE_PDF_TOO = Archive the PDF too
+# PROPALEHISTORY_AUTO_ARCHIVE ?
+PROPALEHISTORY_AUTO_ARCHIVE_DESC = Automatically archive a sales proposal when it is validated
+PROPALEHISTORY_HIDE_VERSION_ON_TABS = Hide version number in tabs
+PROPALEHISTORY_HIDE_VERSION_ON_TABS_DESC = Hide version number on tabs
+PROPALEHISTORY_SHOW_VERSION_PDF = Show the version number on the PDF (from 2nd version upward)
+PROPALEHISTORY_SHOW_VERSION_PDF_DESC = Display version number on the PDF (from the 2nd version)
+
+PropaleHistoryArchiver = Archive
+PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth = Archiving at validation and modification can not be used at the same time.
+
+Restaurer = Restore
+ReturnInitialVersion = Return initial version
+
 VersionNumberShort = Version No.
+Visualiser = Show

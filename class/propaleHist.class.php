@@ -295,8 +295,10 @@
 
 		static function listeVersions(&$db, $object) {
 			global $langs,$conf,$hookmanager;
+
 			$TVersion = self::getVersions($db, $object->id);
 
+			$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 			$num = count($TVersion);
 
@@ -313,7 +315,7 @@
 				print '<input type="hidden" name="socid" value="'.$object->socid.'" />';
 
 				if(function_exists('newToken')){
-					print '<input type="hidden" name="token" value="'.newToken().'" />';
+					print '<input type="hidden" name="token" value="'. $newToken .'" />';
 				}
 
 				print '<select name="idVersion">';
@@ -395,7 +397,7 @@
 		        $this->labelstatut_short[4]=(! empty($conf->global->PROPAL_STATUS_BILLEDSHORT_LABEL) ? $conf->global->PROPAL_STATUS_BILLEDSHORT_LABEL : $langs->trans("PropalStatusBilledShort"));
 		    }
 
-			function getLinesArray()
+			function getLinesArray($filters = '')
     		{
     			null;
 			}

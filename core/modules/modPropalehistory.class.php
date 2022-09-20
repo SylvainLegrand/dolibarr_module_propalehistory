@@ -42,7 +42,7 @@ class modPropalehistory extends DolibarrModules
 
         $this->db = $db;
 
-		$this->editor_name = 'ATM-Consulting';
+		$this->editor_name = 'ATM Consulting';
 		$this->editor_url = "https://www.atm-consulting.fr";
         // Id for module (must be unique).
         // Use a free id here
@@ -63,7 +63,7 @@ class modPropalehistory extends DolibarrModules
         // (where XXX is value of numeric property 'numero' of module)
         $this->description = "Gestion de l'historique des propositions commerciales";
         // Possible values for version are: 'development', 'experimental' or version
-        $this->version = '2.2.0';
+        $this->version = '2.4.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \propalehistory\TechATM::getLastModuleVersionUrl($this);
@@ -78,7 +78,7 @@ class modPropalehistory extends DolibarrModules
         // use this->picto='pictovalue'
         // If file is in module/img directory under name object_pictovalue.png
         // use this->picto='pictovalue@module'
-        $this->picto = 'propalehistory@propalehistory'; // mypicto@mymodule
+        $this->picto = 'propalehistory.svg@propalehistory'; // mypicto@mymodule
         // Defined all module parts (triggers, login, substitutions, menus, css, etc...)
         // for default path (eg: /mymodule/core/xxxxx) (0=disable, 1=enable)
         // for specific path of parts (eg: /mymodule/core/modules/barcode)

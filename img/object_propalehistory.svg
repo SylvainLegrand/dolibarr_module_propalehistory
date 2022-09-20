@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to SVGRepo https://www.svgrepo.com -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 32 32"
+   style="enable-background:new 0 0 32 32;"
+   xml:space="preserve"
+   id="svg5"
+   sodipodi:docname="object_propalehistory.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   inkscape:export-filename="/home/john/WWW/dolibarr/htdocs/custom/propalehistory/img/propalehistory.png"
+   inkscape:export-xdpi="1536"
+   inkscape:export-ydpi="1536"><metadata
+   id="metadata11"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs9">
+	
+
+	
+</defs><sodipodi:namedview
+   pagecolor="#505050"
+   bordercolor="#ffffff"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1011"
+   id="namedview7"
+   showgrid="false"
+   inkscape:zoom="14.75"
+   inkscape:cx="21.6852"
+   inkscape:cy="18.606285"
+   inkscape:window-x="1920"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg5" />
+<path
+   style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   d="M 1.359375 1.359375 L 1.359375 30.916016 L 24.880859 30.916016 L 24.880859 7.4628906 L 19.039062 1.359375 L 1.359375 1.359375 z "
+   id="rect915" /><circle
+   style="fill:#cb4f24;fill-opacity:1;stroke:#00384e;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="path913"
+   cx="24"
+   cy="24"
+   r="7.3898306" /><path
+   d="M 1 0.640625 C 0.801 0.640625 0.640625 0.801 0.640625 1 L 0.640625 31 C 0.640625 31.199 0.801 31.359375 1 31.359375 L 17 31.359375 L 17 30.640625 L 1.359375 30.640625 L 1.359375 1.359375 L 18.640625 1.359375 L 18.640625 7 C 18.640625 7.199 18.801 7.359375 19 7.359375 L 24.640625 7.359375 L 24.640625 15 L 25.359375 15 L 25.359375 7 C 25.359375 6.904 25.322859 6.8121406 25.255859 6.7441406 L 19.255859 0.74414062 C 19.188859 0.67714063 19.096 0.640625 19 0.640625 L 1 0.640625 z M 19.359375 1.8691406 L 24.130859 6.640625 L 19.359375 6.640625 L 19.359375 1.8691406 z M 5 10.640625 L 5 11.359375 L 21 11.359375 L 21 10.640625 L 5 10.640625 z M 5 14.640625 L 5 15.359375 L 21 15.359375 L 21 14.640625 L 5 14.640625 z M 24 16.640625 C 22.536 16.640625 21.121109 17.070812 19.912109 17.882812 C 19.571109 18.108813 19.252078 18.362625 18.955078 18.640625 L 5 18.640625 L 5 19.361328 L 18.287109 19.361328 C 17.968109 19.754328 17.688031 20.183672 17.457031 20.638672 C 17.131031 21.265672 16.899578 21.943625 16.767578 22.640625 L 5 22.640625 L 5 23.359375 L 16.667969 23.359375 C 16.648969 23.571375 16.640625 23.786 16.640625 24 C 16.640625 28.058 19.941 31.359375 24 31.359375 C 28.059 31.359375 31.359375 28.059 31.359375 24 C 31.359375 19.941 28.059 16.640625 24 16.640625 z M 24 17.359375 C 27.661 17.359375 30.640625 20.337047 30.640625 23.998047 C 30.640625 27.659047 27.661 30.638672 24 30.638672 C 20.339 30.638672 17.359375 27.659047 17.359375 23.998047 C 17.359375 22.943047 17.614656 21.896797 18.097656 20.966797 C 18.608656 19.960797 19.3745 19.100469 20.3125 18.480469 C 21.4045 17.747469 22.68 17.359375 24 17.359375 z M 5 26.640625 L 5 27.359375 L 14 27.359375 L 14 26.640625 L 5 26.640625 z "
+   id="invoice_1_"
+   style="fill:#00384e;fill-opacity:1;stroke:#00384e;stroke-opacity:1;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none" />
+<g
+   id="Layer_1">
+</g>
+<path
+   id="path818"
+   d="m 29.058049,26.476117 -2.064573,1.769611 v -1.179923 h -0.34752 c -1.097212,0 -1.905143,-0.491586 -2.572125,-1.142469 0.257244,-0.302814 0.49046,-0.607617 0.707421,-0.892763 0.04983,-0.06577 0.09936,-0.130689 0.148776,-0.195603 0.493444,0.510248 1.024186,0.85447 1.716059,0.85447 h 0.34752 v -0.983327 z m -9.831882,-3.932994 h 1.028871 c 0.652453,0 1.161549,0.306662 1.631227,0.768774 0.07729,-0.09923 0.15545,-0.202591 0.23434,-0.305798 0.192044,-0.252846 0.395053,-0.519068 0.615025,-0.784583 -0.64947,-0.60691 -1.433059,-1.055072 -2.480566,-1.055072 h -1.028897 z m 7.767309,-2.648004 v 1.173092 h -0.34752 c -1.815862,0 -2.839628,1.345923 -3.743071,2.533805 -0.812616,1.066588 -1.5142,1.988981 -2.647847,1.988981 h -1.028871 v 1.376521 h 1.028871 c 1.816149,0 2.839891,-1.345216 3.743358,-2.53281 0.812329,-1.06787 1.514043,-1.990132 2.64756,-1.990132 h 0.34752 v 0.990446 l 2.06473,-1.770161 z"
+   style="fill:#ffffff;fill-opacity:1;stroke-width:0.02617459"
+   inkscape:connector-curvature="0" /><g
+   id="g822"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g824"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g826"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g828"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g830"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g832"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g834"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g836"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g838"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g840"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g842"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g844"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g846"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g848"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g><g
+   id="g850"
+   transform="matrix(0.02906237,0,0,0.02906237,18.683794,18.612031)">
+</g></svg>

@@ -1,29 +1,35 @@
 Module104090Name = Propale-Historique
 Module104090Desc = Module permettant d'historiser et de versionner les différentes versions de propositions faites à un client
-HistoryVersionSuccessfullDelete = Version historisée supprimée avec succès 
-HistoryVersionSuccessfullArchived = Version de proposition archivée avec succès
-HistoryVersionSuccessfullRestored = Version de proposition restaurée avec succès
+
 AbricotNotFound = Le module complémentaire gratuit Abricot ne semble pas installé dans votre environnement mais est nécessaire pour utiliser ce module. Merci de le télécharger à l'adresse suivante
-
-PROPALEHISTORY_AUTO_ARCHIVE_DESC = Archiver automatiquement une proposition commerciale lors de sa validation
-PROPALEHISTORY_SHOW_VERSION_PDF_DESC = Afficher le numéro de version sur le PDF (à partir de la 2e)
-PROPALEHISTORY_HIDE_VERSION_ON_TABS_DESC = Masquer le numéro de version dans les onglets
-
-AutoArchive = Archiver automatiquement une proposition commerciale lors de sa validation
-PROPALEHISTORY_SHOW_VERSION_PDF = Afficher le numéro de version sur le PDF (à partir de la 2e)
 
 ArchiveProposal = Création une nouvelle version de la proposition
 ArchiveProposalCheckboxLabel = Creer une nouvelle version la proposition ?
-ConfirmModifyProposal = Confirmer la modification de la proposition
-PROPALEHISTORY_ARCHIVE_ON_MODIFY = Demander la création d'un nouvelle version à la modification d'une proposition
-PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth = L'archivage à la validation et la modification ne peuvent être utilisés en même temps.
+AutoArchive = Archiver automatiquement une proposition commerciale lors de sa validation
 
+ConfirmModifyProposal = Confirmer la modification de la proposition
+
+HistoryVersionSuccessfullArchived = Version de proposition archivée avec succès
+HistoryVersionSuccessfullDelete   = Version historisée supprimée avec succès
+HistoryVersionSuccessfullRestored = Version de proposition restaurée avec succès
+
+PROPALEHISTORY_ARCHIVE_ON_MODIFY = Demander la création d'un nouvelle version à la modification d'une proposition
 PROPALEHISTORY_ARCHIVE_PDF_TOO = Archiver aussi le PDF
+# PROPALEHISTORY_AUTO_ARCHIVE ?
+PROPALEHISTORY_AUTO_ARCHIVE_DESC = Archiver automatiquement une proposition commerciale lors de sa validation
 PROPALEHISTORY_HIDE_VERSION_ON_TABS = Masquer le numéro de version dans les onglets
 
-ReturnInitialVersion = Retour version courante
-PropaleHistoryArchiver = Archiver
-Visualiser = Visualiser
-Restaurer = Restaurer
-VersionNumberShort = Version n°
+PROPALEHISTORY_HIDE_VERSION_ON_TABS_DESC = Masquer le numéro de version dans les onglets
+PROPALEHISTORY_SHOW_VERSION_PDF = Afficher le numéro de version sur le PDF (à partir de la 2e)
+PROPALEHISTORY_SHOW_VERSION_PDF_DESC = Afficher le numéro de version sur le PDF (à partir de la 2e)
+PROPALEHISTORY_ARCHIVE_AND_RESET_DATES = Reset des dates des devis à la date du jour lors de l'archivage
+EXPERIMENTAL_OPTIONS = Options expérimentales
 
+PropaleHistoryArchiver = Archiver
+PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth = L'archivage à la validation et la modification ne peuvent être utilisés en même temps.
+
+Restaurer = Restaurer
+ReturnInitialVersion = Retour version courante
+
+VersionNumberShort = Version n°
+Visualiser = Visualiser

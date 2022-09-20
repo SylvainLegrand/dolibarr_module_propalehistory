@@ -41,43 +41,47 @@ if (! $user->admin) {
 // Parameters
 $action = GETPOST('action', 'alpha');
 
-/*
- * Actions
- */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-	$code=$reg[1];
-	if ($code == 'PROPALEHISTORY_AUTO_ARCHIVE' && ! empty($conf->global->PROPALEHISTORY_ARCHIVE_ON_MODIFY)) {
-		$mesg = $langs->trans('PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth');
-		setEventMessages($mesg, array(), 'errors');
-		$_POST['PROPALEHISTORY_AUTO_ARCHIVE'] = 0;
-	}
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
-	{
-		if ($code == 'PROPALEHISTORY_ARCHIVE_ON_MODIFY') {
-			dolibarr_set_const($db, 'PROPALEHISTORY_AUTO_ARCHIVE', 0, 'chaine', 0, '', $conf->entity);
-		}
-		header("Location: ".$_SERVER["PHP_SELF"]);
-		exit;
-	}
-	else
-	{
-		dol_print_error($db);
+if(!class_exists('FormSetup')){
+	// une Pr est en cour pour fixer certains elements de la class en V16 (car c'est des fix/new)
+	if (versioncompare(explode('.' , DOL_VERSION), array(16)) < 0 && !class_exists('FormSetup')){
+		require_once __DIR__.'/../backport/v16/core/class/html.formsetup.class.php';
+	} else {
+		require_once DOL_DOCUMENT_ROOT.'/core/class/html.formsetup.class.php';
 	}
 }
 
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-	$code=$reg[1];
-	if (dolibarr_del_const($db, $code, 0) > 0)
-	{
-		Header("Location: ".$_SERVER["PHP_SELF"]);
-		exit;
-	}
-	else
-	{
-		dol_print_error($db);
-	}
+
+$formSetup = new FormSetup($db);
+
+
+// Archiver automatiquement une proposition commerciale lors de sa validation
+$formSetup->newItem('PROPALEHISTORY_AUTO_ARCHIVE')->setAsYesNo()->nameText = $langs->trans("AutoArchive");
+
+// Afficher le numéro de version sur le PDF (à partir de la 2e)
+$formSetup->newItem('PROPALEHISTORY_SHOW_VERSION_PDF')->setAsYesNo();
+
+// Masquer le numéro de version dans les onglets
+$formSetup->newItem('PROPALEHISTORY_HIDE_VERSION_ON_TABS')->setAsYesNo();
+
+// Archiver aussi le PDF
+$formSetup->newItem('PROPALEHISTORY_ARCHIVE_PDF_TOO')->setAsYesNo();
+
+// Demander la création d'un nouvelle version à la modification d'une proposition
+$formSetup->newItem('PROPALEHISTORY_ARCHIVE_ON_MODIFY')->setAsYesNo();
+
+
+$formSetup->newItem('EXPERIMENTAL_OPTIONS')->setAsTitle();
+
+// Reset des dates des devis sur lors de l'archivage à la date du jour
+$formSetup->newItem('PROPALEHISTORY_ARCHIVE_AND_RESET_DATES')->setAsYesNo();
+
+/*
+ * Actions
+ */
+if ($action == 'update' && !empty($formSetup) && is_object($formSetup) && !empty($user->admin)) {
+	$formSetup->saveConfFromPost();
+	header('Location:'.$_SERVER['PHP_SELF']);
+	exit;
 }
 
 /*
@@ -89,11 +93,11 @@ llxHeader('', $langs->trans($page_name));
 // Subheader
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans($page_name), $linkback);
+print load_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
 $head = propalehistoryAdminPrepareHead();
-dol_fiche_head(
+print dol_get_fiche_head(
     $head,
     'settings',
     $langs->trans("Module1040900Name"),
@@ -101,90 +105,25 @@ dol_fiche_head(
     "project"
 );
 
-$ok = $conf->propal->enabled;
-
-if($ok) {
-	// Setup page goes here
-	$form=new Form($db);
-	$var=false;
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print '<td>'.$langs->trans("Parameters").'</td>'."\n";
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-
-	// Display convert button on proposal
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("AutoArchive").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="set_PROPALEHISTORY_AUTO_ARCHIVE">';
-	print $form->selectyesno("PROPALEHISTORY_AUTO_ARCHIVE",$conf->global->PROPALEHISTORY_AUTO_ARCHIVE,1);
-	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-	print '</form>';
-	print '</td></tr>';
-
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("PROPALEHISTORY_SHOW_VERSION_PDF").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="set_PROPALEHISTORY_SHOW_VERSION_PDF">';
-	print $form->selectyesno("PROPALEHISTORY_SHOW_VERSION_PDF",$conf->global->PROPALEHISTORY_SHOW_VERSION_PDF,1);
-	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-	print '</form>';
-	print '</td></tr>';
-
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("PROPALEHISTORY_HIDE_VERSION_ON_TABS").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="set_PROPALEHISTORY_HIDE_VERSION_ON_TABS">';
-	print $form->selectyesno("PROPALEHISTORY_HIDE_VERSION_ON_TABS",$conf->global->PROPALEHISTORY_HIDE_VERSION_ON_TABS,1);
-	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-	print '</form>';
-	print '</td></tr>';
-
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("PROPALEHISTORY_ARCHIVE_PDF_TOO").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="set_PROPALEHISTORY_ARCHIVE_PDF_TOO">';
-	print $form->selectyesno("PROPALEHISTORY_ARCHIVE_PDF_TOO",$conf->global->PROPALEHISTORY_ARCHIVE_PDF_TOO,1);
-	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-	print '</form>';
-	print '</td></tr>';
-
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("PROPALEHISTORY_ARCHIVE_ON_MODIFY").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="set_PROPALEHISTORY_ARCHIVE_ON_MODIFY">';
-	print $form->selectyesno("PROPALEHISTORY_ARCHIVE_ON_MODIFY",$conf->global->PROPALEHISTORY_ARCHIVE_ON_MODIFY,1);
-	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-	print '</form>';
-	print '</td></tr>';
+print dol_get_fiche_end();
 
 
+if ($action == 'edit') {
+	print $formSetup->generateOutput(true);
+	print '<br>';
 } else {
-	print $langs->trans('ModuleNeedProposalOrOrderModule');
+	if (!empty($formSetup->items)) {
+		print $formSetup->generateOutput();
+
+		print '<div class="tabsAction">';
+		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?action=edit&token='.newToken().'">'.$langs->trans("Modify").'</a>';
+		print '</div>';
+	}
+	else {
+		print '<br>'.$langs->trans("NothingToSetup");
+	}
 }
 
-print '</table>';
 
 llxFooter();
 

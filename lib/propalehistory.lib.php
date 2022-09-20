@@ -49,7 +49,7 @@ function propalehistoryAdminPrepareHead()
     //$this->tabs = array(
     //	'entity:-tabname:Title:@postit:/postit/mypage.php?id=__ID__'
     //); // to remove a tab
-    complete_head_from_modules($conf, $langs, $object, $head, $h, 'propalehistory');
+    complete_head_from_modules($conf, $langs, null, $head, $h, 'propalehistory');
 
     return $head;
 }

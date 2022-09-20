@@ -43,9 +43,9 @@ if (! $user->admin) {
  */
 $page_name = "Doc2ProjectAbout";
 llxHeader('', $langs->trans($page_name));
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Subheader
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php?token='.$newToken.'">'
     . $langs->trans("BackToModuleList") . '</a>';
 print_fiche_titre($langs->trans($page_name), $linkback);
 
