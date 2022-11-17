@@ -184,7 +184,7 @@
 				$path = DOL_DATA_ROOT . '/propale/' . $object->ref . '/' .$object->ref . '.pdf';
 			}
 
-            $ok = TPropaleHist::generatePDF($object);
+            $ok = self::generatePDF($object);
 
 			if ($ok > 0)
 			{
@@ -195,9 +195,22 @@
 
 		static function generatePDF(&$object)
 		{
-			global $conf,$langs;
+			global $conf, $langs;
 
-			return $object->generateDocument($conf->global->PROPALE_ADDON_PDF, $langs, 0, 0, 0);
+            // Define output language
+            $outputlangs = $langs;
+            if (!empty($conf->global->MAIN_MULTILANGS)) {
+                $outputlangs = new Translate('', $conf);
+                $newlang = (GETPOST('lang_id', 'aZ09') ? GETPOST('lang_id', 'aZ09') : $object->thirdparty->default_lang);
+                $outputlangs->setDefaultLang($newlang);
+            }
+
+            // PDF
+            $hidedetails = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
+            $hidedesc = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
+            $hideref = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+
+            return $object->generateDocument($object->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 
         /**
