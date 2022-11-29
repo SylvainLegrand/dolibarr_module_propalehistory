@@ -115,6 +115,7 @@ class InterfacePropalehistory extends DolibarrTriggers
         $db=&$this->db;
 		//echo $action.'<br>';
         if ($action == 'PROPAL_VALIDATE' && $conf->global->PROPALEHISTORY_AUTO_ARCHIVE) {
+            dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 
 			define('INC_FROM_DOLIBARR', true);
 			dol_include_once("/propalehistory/config.php");
@@ -129,11 +130,15 @@ class InterfacePropalehistory extends DolibarrTriggers
 
 			$ATMdb = new TPDOdb;
 
-			TPropaleHist::archiverPropale($ATMdb, $object);
-
-            dol_syslog(
-                "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
-            );
+            /**
+             * @var Propal $object
+             */
+			$result = TPropaleHist::archiverPropale($ATMdb, $object);
+            if ($result < 0) {
+                return -1;
+            } else {
+                return 1;
+            }
         } elseif ($action == 'PROPAL_DELETE') {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 

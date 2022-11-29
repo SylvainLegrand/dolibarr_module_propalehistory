@@ -21,6 +21,8 @@ PROPALEHISTORY_HIDE_VERSION_ON_TABS = Hide version number in tabs
 PROPALEHISTORY_HIDE_VERSION_ON_TABS_DESC = Hide version number on tabs
 PROPALEHISTORY_SHOW_VERSION_PDF = Show the version number on the PDF (from 2nd version upward)
 PROPALEHISTORY_SHOW_VERSION_PDF_DESC = Display version number on the PDF (from the 2nd version)
+PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM = Keep version number on restoring
+PropaleHistoryRestoreKeepVersionNumHelp = When restoring, the command will have the number of the version that has been restored. The current version will be saved.<br /><span style="color:#770000;">This function will only be active for new proposals.</span>
 
 PropaleHistoryArchiver = Archive
 PropalHistoryAutoArchiveAndArchiveOnModifyCantBeUsedBoth = Archiving at validation and modification can not be used at the same time.
@@ -30,3 +32,4 @@ ReturnInitialVersion = Return initial version
 
 VersionNumberShort = Version No.
 Visualiser = Show
+PropaleHistoryVersionNum = Version number

@@ -1,6 +1,11 @@
 <?php
 	class TPropaleHist extends TObjetStd {
 
+        /**
+         * @var array options
+         */
+        public $array_options = array();
+
 		function __construct() {
 			parent::set_table(MAIN_DB_PREFIX.'propale_history');
 			parent::add_champs('serialized_parent_propale',array('type'=>'text'));
@@ -47,6 +52,13 @@
 			return $propal;
 		}
 
+        /**
+         * Archive proposal
+         *
+         * @param   TPDOdb  $PDOdb      PDO connection
+         * @param   Propal  $object     Proposal object
+         * @return  int     <0 if KO, >0 if OK
+         */
 		static function archiverPropale(&$PDOdb, &$object)
 		{
 			global $conf, $db, $langs;
@@ -54,6 +66,26 @@
 			if (!empty($conf->global->PROPALEHISTORY_ARCHIVE_PDF_TOO)) {
 				TPropaleHist::archivePDF($object);
 			}
+
+            // set proposal version number before saving
+            $update_extras = false;
+            if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                $object->array_options['options_propalehistory_version_num'] = self::getVersionNumNext($db, $object->id); // get next version number
+                $update_extras = true;
+            } else {
+                if (!empty($object->array_options['options_propalehistory_version_num'])) {
+                    $object->array_options['options_propalehistory_version_num'] = null; // reset version number
+                    $update_extras = true;
+                }
+            }
+            if ($update_extras === true) {
+                $res = $object->insertExtraFields();
+                if ($res < 0) {
+                    return -1;
+                }
+            }
+
+            $error = 0;
 
 			$newVersionPropale = new TPropaleHist;
 			$newVersionPropale->setObject($object);
@@ -78,14 +110,16 @@
                 dol_syslog(__METHOD__, LOG_DEBUG);
                 $resql = $db->query($sql);
                 if (!$resql) {
-                    $error_msg = $db->lasterror();
+                    $error++;
+                    $object->error = $db->lasterror();
+                    $object->errors[] = $object->error;
                     $db->rollback();
-                    dol_syslog(__METHOD__, 'Error : ' . $error_msg, LOG_ERR);
+                    dol_syslog(__METHOD__ . ' Error : ' . $object->error, LOG_ERR);
                 } else {
                     $db->commit();
                 }
 
-                if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
+                if (!$error && empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
                     // reload the object with new lines
                     $ret = $object->fetch($object->id);
                     $ret = $object->fetch_thirdparty($object->socid);
@@ -106,11 +140,21 @@
                     $object->generateDocument($object->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
                 }
             }
-			?>
-				<script language="javascript">
-					document.location.href="<?php echo $_SERVER['PHP_SELF'] ?>?id=<?php echo $_REQUEST['id']?>&mesg=<?php echo $langs->transnoentities('HistoryVersionSuccessfullArchived') ?>";
-				</script>
-			<?php
+
+            // update to next version to work on (only if we work on last version)
+            if (!$error && !empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                $object->array_options['options_propalehistory_version_num']++;
+                $res = $object->insertExtraFields();
+                if ($res < 0) {
+                    $error++;
+                }
+            }
+
+            if (!$error) {
+                return 1;
+            } else {
+                return -1;
+            }
 
 
 			/*if($_REQUEST['actionATM'] == 'createVersion') {
@@ -129,16 +173,8 @@
 		{
 			global $db;
 
-			$sql = "";
-			$sql.= " SELECT count(*) as nb";
-			$sql.= " FROM ".MAIN_DB_PREFIX."propale_history";
-			$sql.= " WHERE fk_propale = ".$object->id;
-			$resql = $db->query($sql);
+            $versionNum = self::getVersionNumFromProposalOrVersionList($db, $object);
 
-			$nb=1;
-			if ($resql && ($row = $db->fetch_object($resql))) $nb = $row->nb + 1;
-
-			$ok = 1;
 			if ($object->entity > 1) {
 				$filename = DOL_DATA_ROOT . '/' . $object->entity . '/propale/' . $object->ref . '/' .$object->ref;
 				$path = DOL_DATA_ROOT . '/' . $object->entity . '/propale/' . $object->ref . '/' .$object->ref . '.pdf';
@@ -148,11 +184,12 @@
 				$path = DOL_DATA_ROOT . '/propale/' . $object->ref . '/' .$object->ref . '.pdf';
 			}
 
-			if (!is_file($path)) $ok = TPropaleHist::generatePDF($object);
+            $ok = TPropaleHist::generatePDF($object);
 
 			if ($ok > 0)
 			{
-				exec('cp "'.$path.'" "'.$filename.'-'.$nb.'.pdf"');
+//				exec('cp "'.$path.'" "'.$filename.'-'.$versionNum.'.pdf"');
+				copy($path, $filename.'-'.$versionNum.'.pdf');
 			}
 		}
 
@@ -166,11 +203,12 @@
         /**
          * Restore a proposal
          *
-         * @param   PDO     $PDOdb      Database connection
-         * @param   Propal  $object     Proposal object
+         * @param   PDO     $PDOdb                  Database connection
+         * @param   Propal  $object                 Proposal object
+         * @param   int     $versionNum             [=0] To restore on new version or version number to restore on
          * @return  void
          */
-		static function restaurerPropale(&$PDOdb, &$object) {
+		static function restaurerPropale(&$PDOdb, &$object, $versionNum = 0) {
 
 			global $db, $user,$langs;
 
@@ -236,6 +274,7 @@
 
             // set extra fields before update
             $object->array_options = $propale->array_options;
+            $object->array_options['options_propalehistory_version_num'] = (empty($versionNum) ? null : $versionNum);
 
 			if (method_exists($object, 'set_draft')) $object->set_draft($user); // Pour pouvoir modifier les dates, le statut doit être à 0
 			else $object->setDraft($user);
@@ -270,10 +309,91 @@
              */
 		}
 
+        /**
+         * Get version number from proposal
+         *
+         * @param   DoliDB      $db             Database connection
+         * @param   Propal      $proposal       Proposal object
+         * @param   array       $versionList    [=array()] Version list
+         * @return  int
+         */
+        public static function getVersionNumFromProposalOrVersionList(&$db, $proposal, $versionList = array())
+        {
+            global $conf;
+
+            $fromVersionList = false;
+
+            if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                if (!empty($proposal->array_options['options_propalehistory_version_num'])) {
+                    $versionNum = $proposal->array_options['options_propalehistory_version_num'];
+                } else {
+                    $fromVersionList = true;
+                }
+            } else {
+                $fromVersionList = true;
+            }
+
+            if ($fromVersionList === true) {
+                if (empty($versionList)) {
+                    $versionList = self::getVersions($db, $proposal->id);
+                }
+                $versionNumLast = self::getVersionNumLastFromVersionList($versionList);
+                $versionNum = $versionNumLast + 1;
+            }
+
+            return $versionNum;
+        }
+
+        /**
+         * Get next version number
+         *
+         * @param   DoliDB  $db             Database connection
+         * @param   int     $fk_object      Proposal id
+         * @return  int     Next version number
+         */
+        protected static function getVersionNumNext(&$db, $fk_object) {
+            $TVersion = self::getVersions($db, $fk_object);
+            $versionNumLast = self::getVersionNumLastFromVersionList($TVersion);
+            return $versionNumLast + 1;
+        }
+
+        /**
+         * Get last version number
+         *
+         * @param   array       $versionList    [=array()] Version list
+         * @return  int         Last version number
+         */
+        protected static function getVersionNumLastFromVersionList($versionList = array())
+        {
+            global $conf;
+
+            $versionNumLast = 0;
+
+            if (!empty($versionList)) {
+                $versionNumLast = count($versionList);
+
+                if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                    $versionPropale = new TPropaleHist;
+
+                    foreach ($versionList as $row) {
+                        $versionPropale->serialized_parent_propale = $row->serialized_parent_propale;
+                        $propale = $versionPropale->getObject();
+                        if (!empty($propale->array_options['options_propalehistory_version_num'])) {
+                            if ($propale->array_options['options_propalehistory_version_num'] > $versionNumLast) {
+                                $versionNumLast = $propale->array_options['options_propalehistory_version_num'];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $versionNumLast;
+        }
+
 		static function getVersions(&$db, $fk_object) {
 
 			$sql = "";
-			$sql.= " SELECT rowid, date_version, date_cre, total";
+			$sql.= " SELECT rowid, date_version, date_cre, total, serialized_parent_propale";
 			$sql.= " FROM ".MAIN_DB_PREFIX."propale_history";
 			$sql.= " WHERE fk_propale = ".$fk_object;
 			$sql.= " ORDER BY rowid ASC";
@@ -293,6 +413,13 @@
 			return $TVersion;
 		}
 
+        /**
+         * Show proposals versions and get current version number
+         *
+         * @param   DoliDb      $db         Database connection
+         * @param   Propal      $object     Proposal object
+         * @return  int
+         */
 		static function listeVersions(&$db, $object) {
 			global $langs,$conf,$hookmanager;
 
@@ -301,6 +428,7 @@
 			$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 			$num = count($TVersion);
+            $versionNumCurrent = self::getVersionNumFromProposalOrVersionList($db, $object, $TVersion);
 
 			$url=DOL_URL_ROOT.'/comm/propal.php';
 			if ((float) DOL_VERSION >= 4.0) {
@@ -318,20 +446,32 @@
 					print '<input type="hidden" name="token" value="'. $newToken .'" />';
 				}
 
-				print '<select name="idVersion">';
+				print '<select id="propalehistory_id" name="idVersion">';
 				$i = 1;
+                $versionNumSelected = $i;
 
-				foreach($TVersion as &$row){
+				foreach ($TVersion as &$row) {
+                    $versionNumRow = $i;
+                    if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                        $versionPropale = new TPropaleHist;
+                        $versionPropale->serialized_parent_propale = $row->serialized_parent_propale;
+                        $propale = $versionPropale->getObject();
+                        if (!empty($propale->array_options['options_propalehistory_version_num'])) {
+                            $versionNumRow = $propale->array_options['options_propalehistory_version_num'];
+                        }
+                    }
 
 					if(isset($_REQUEST['idVersion']) && $_REQUEST['idVersion'] == $row->rowid){
 						$selected = 'selected="selected"';
+                        $versionNumCurrent = $versionNumRow;
+                        $versionNumSelected = $versionNumRow;
 					} else {
 						$selected = "";
 					}
 
-					$options = '<option id="' . $row->rowid . '" value="' . $row->rowid . '" ' . $selected . '>'.$langs->trans('VersionNumberShort').' ' . $i . ' - ' . price($row->total) . ' ' . $langs->getCurrencySymbol($conf->currency, 0) . ' - ' . dol_print_date($db->jdate($row->date_cre), "dayhour") . '</option>';
+					$options = '<option id="' . $row->rowid . '" value="' . $row->rowid . '" ' . $selected . ' data-version-num="' . $versionNumRow . '">'.$langs->trans('VersionNumberShort').' ' . $versionNumRow . ' - ' . price($row->total) . ' ' . $langs->getCurrencySymbol($conf->currency, 0) . ' - ' . dol_print_date($db->jdate($row->date_cre), "dayhour") . '</option>';
 					$hookmanager->initHooks(array('propalehistory'));
-					$parameters = array('row' => $row, 'selected' => $selected, 'versionNumber' => $i);
+					$parameters = array('row' => $row, 'selected' => $selected, 'versionNumber' => $versionNumRow);
 					$action = '';
 					$reshook = $hookmanager->executeHooks('listeVersion_customOptions', $parameters, $object, $action);    // Note that $action and $object may have been modified by some hooks
 					if ($reshook > 0) $options = $hookmanager->resPrint;
@@ -342,6 +482,9 @@
 				}
 
 				print '</select>';
+
+                print '<input type="hidden" id="propalehistory_version_num_selected" name="propalehistory_version_num_selected" value="' . $versionNumSelected . '" />';
+
 				print '<input class="butAction" id="voir" value="'.$langs->trans('Visualiser').'" type="SUBMIT" />';
 				print '</form>';
 				print '</div>';
@@ -350,20 +493,17 @@
 				<script type="text/javascript">
 					$(document).ready(function(){
 						$("#formListe").appendTo('div.tabsAction');
+
+                        $("#propalehistory_id").change(function() {
+                            var optionSelectedElem = $("option:selected", this);
+                            $("#propalehistory_version_num_selected").val(optionSelectedElem.attr("data-version-num"));
+                        });
 					})
 				</script>
 				<?php
-
-			}
-			else{
-
-				null;
 			}
 
-
-
-
-			return $num;
+			return $versionNumCurrent;
 		}
 
 	}

@@ -19,23 +19,24 @@ class ActionsPropalehistory
 
 		if (in_array('propalcard',explode(':',$parameters['context'])))
         {
-
+            /**
+             * @var Propal $object
+             */
 	        if($action != 'create' && $action != 'statut' && $action != 'presend') {
 	    		dol_include_once("/propalehistory/class/propaleHist.class.php");
-				$ATMdb = new TPDOdb;
-
 
 		    	$actionATM = GETPOST('actionATM');
 		    	$url=DOL_URL_ROOT.'/comm/propal.php';
                 if ((float) DOL_VERSION >= 4.0) {
                     $url=DOL_URL_ROOT.'/comm/propal/card.php';
                 }
-				if($actionATM == 'viewVersion') {
+				if ($actionATM == 'viewVersion') {
+                    $versionNumSelected = GETPOST('propalehistory_version_num_selected', 'int');
 					?>
 						<script type="text/javascript">
 							$(document).ready(function() {
 
-								$('div.tabsAction').html('<?php echo '<div class="inline-block divButAction"><a id="returnCurrent" href="'.$_SERVER['PHP_SELF'].'?id='.$_REQUEST['id'].'&token='.$newToken.'">'.$langs->trans('ReturnInitialVersion').'</a> <a id="butRestaurer" class="butAction" href="'.$url.'?id='.$_REQUEST['id'].'&actionATM=restaurer&idVersion='.$_REQUEST['idVersion'].'&token='.$newToken.'">'.$langs->trans('Restaurer').'</a><a id="butSupprimer" class="butActionDelete" href="'.$url.'?id='.$_REQUEST['id'].'&actionATM=supprimer&idVersion='.$_REQUEST['idVersion'].'">'.$langs->trans('Delete').'</a></div>'?>');
+								$('div.tabsAction').html('<?php echo '<div class="inline-block divButAction"><a id="returnCurrent" href="'.$_SERVER['PHP_SELF'].'?id='.$_REQUEST['id'].'&token='.$newToken.'">'.$langs->trans('ReturnInitialVersion').'</a> <a id="butRestaurer" class="butAction" href="'.$url.'?id='.$_REQUEST['id'].'&actionATM=restaurer&idVersion='.$_REQUEST['idVersion'].'&token='.$newToken.'&versionNum='.$versionNumSelected.'">'.$langs->trans('Restaurer').'</a><a id="butSupprimer" class="butActionDelete" href="'.$url.'?id='.$_REQUEST['id'].'&actionATM=supprimer&idVersion='.$_REQUEST['idVersion'].'">'.$langs->trans('Delete').'</a></div>'?>');
 								$('#butRestaurer').insertAfter('#voir');
 								$('#butSupprimer').insertBefore('#voir');
 								$('#builddoc_form').hide();
@@ -43,11 +44,7 @@ class ActionsPropalehistory
 						</script>
 
 					<?php
-
-					TPropaleHist::listeVersions($db, $object);
-				} elseif($actionATM == 'createVersion') {
-					TPropaleHist::listeVersions($db, $object);
-				} elseif($actionATM == '' && $object->statut == 1) {
+				} elseif ($actionATM == '' && $object->statut == 1) {
                     // TODO Pourquoi c'est ici et pas dans un addMoreActionsButtons ?
 					print '<div id="butNewVersion" class="inline-block divButAction"><a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$_REQUEST['id'].'&actionATM=createVersion&token='.$newToken.'">'.$langs->trans('PropaleHistoryArchiver').'</a></div>';
 					?>
@@ -57,26 +54,18 @@ class ActionsPropalehistory
 							})
 						</script>
 					<?php
-					$num = TPropaleHist::listeVersions($db, $object);
 				}
-				else {
+                $versionNum = TPropaleHist::listeVersions($db, $object);
 
-					$num = TPropaleHist::listeVersions($db, $object);
-
-
-				}
-				if(!empty($num) && ! $conf->global->PROPALEHISTORY_HIDE_VERSION_ON_TABS) {
+				if ($versionNum > 1 && !$conf->global->PROPALEHISTORY_HIDE_VERSION_ON_TABS) {
 					?>
 						<script type="text/javascript">
-							$("a#comm").first().append(" / v. <?php echo $num +1 ?>");
+							$("a#comm").first().append(" / v. <?php echo $versionNum; ?>");
 						console.log($("a#comm").first());
 						</script>
 					<?php
-
 				}
-
 			}
-
 		}
 
 		return 0;
@@ -98,6 +87,7 @@ class ActionsPropalehistory
 
 				// Restore ref
 				$obj->ref = $original_ref;
+                $obj->context['propale_history']['original_ref'] = null;
 			}
 		}
 
@@ -121,12 +111,11 @@ class ActionsPropalehistory
 				dol_include_once("/comm/propal/class/propal.class.php");
 				dol_include_once('/propalehistory/class/propaleHist.class.php');
 
-				$TVersion = TPropaleHist::getVersions($db, $obj->id);
-				$num = count($TVersion);
+                $versionNum = TPropaleHist::getVersionNumFromProposalOrVersionList($db, $obj);
 
-				if ($num > 0) {
+				if ($versionNum > 1) {
 					$obj->context['propale_history'] = array('original_ref' => $obj->ref);
-					$obj->ref .= '/' . ($num + 1);
+					$obj->ref .= '/' . ($versionNum);
 				}
 			}
 		}
@@ -198,7 +187,12 @@ class ActionsPropalehistory
 				// New version if wanted
 				$archive_proposal = GETPOST('archive_proposal', 'alpha');
 				if ($archive_proposal == 'on') {
-					TPropaleHist::archiverPropale($ATMdb, $object);
+					$result = TPropaleHist::archiverPropale($ATMdb, $object);
+                    if ($result < 0) {
+                        setEventMessages($object->error, $object->errors, 'errors');
+                        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id);
+                        exit();
+                    }
 				}
 				$action = 'modif'; // On provoque le repassage-en brouillon
 
@@ -233,13 +227,32 @@ class ActionsPropalehistory
 			$object->id = $_REQUEST['id'];
 			$object->db = $db;
 		} elseif($actionATM == 'createVersion') {
-
-			TPropaleHist::archiverPropale($ATMdb, $object);
-
+			$result = TPropaleHist::archiverPropale($ATMdb, $object);
+            if ($result < 0) {
+                setEventMessages($object->error, $object->errors, 'errors');
+            } else {
+                setEventMessage($langs->transnoentities('HistoryVersionSuccessfullArchived'), 'mesgs');
+            }
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id);
+            exit();
 		} elseif($actionATM == 'restaurer') {
+            if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                $versionNumSelected = GETPOST('versionNum', 'int');
 
-			TPropaleHist::restaurerPropale($ATMdb, $object);
+                // save current proposal version before restoring
+                $currentProposal = new Propal($db);
+                $currentProposal->fetch($object->id);
+                $result = TPropaleHist::archiverPropale($ATMdb, $currentProposal);
+                if ($result < 0) {
+                    setEventMessages($currentProposal->error, $object->errors, 'errors');
+                    header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id);
+                    exit();
+                }
+            } else {
+                $versionNumSelected = 0;
+            }
 
+			TPropaleHist::restaurerPropale($ATMdb, $object, $versionNumSelected);
 		} elseif($actionATM == 'supprimer') {
 
 			$version = new TPropaleHist;
