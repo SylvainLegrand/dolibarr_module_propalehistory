@@ -114,7 +114,18 @@ class InterfacePropalehistory extends DolibarrTriggers
         // Users
         $db=&$this->db;
 		//echo $action.'<br>';
-        if ($action == 'PROPAL_VALIDATE' && $conf->global->PROPALEHISTORY_AUTO_ARCHIVE) {
+        if ($action == 'PROPAL_CREATE') {
+            // only for clone proposal and if version number is used
+            if ($object->context['createfromclone'] == 'createfromclone' && !empty($object->array_options['options_propalehistory_version_num'])) {
+                $object->array_options['options_propalehistory_version_num'] = null; // reset version number
+                $result = $object->insertExtraFields();
+                if ($result < 0) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        } elseif ($action == 'PROPAL_VALIDATE' && $conf->global->PROPALEHISTORY_AUTO_ARCHIVE) {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 
 			define('INC_FROM_DOLIBARR', true);
