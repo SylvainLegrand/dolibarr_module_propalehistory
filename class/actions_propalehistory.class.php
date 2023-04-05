@@ -128,7 +128,7 @@ class ActionsPropalehistory
 		if (in_array('propalcard', explode(':', $parameters['context'])))
 		{
 			// hack pour remettre la bonne ref pour le bloc showdocuments
-			if ($action == 'builddoc' && !empty($object->ref_old)) $object->ref = $object->ref_old;
+			if (!empty($object->ref_old)) $object->ref = $object->ref_old;
 		}
 	}
 
@@ -187,6 +187,9 @@ class ActionsPropalehistory
 				// New version if wanted
 				$archive_proposal = GETPOST('archive_proposal', 'alpha');
 				if ($archive_proposal == 'on') {
+					// hack pour stocker la bonne ref pour pouvoir la remettre avant le bloc showdocuments
+					$object->ref_old = $object->ref;
+
 					$result = TPropaleHist::archiverPropale($ATMdb, $object);
                     if ($result < 0) {
                         setEventMessages($object->error, $object->errors, 'errors');
@@ -273,7 +276,7 @@ class ActionsPropalehistory
              */
 		}
 
-		if (in_array('propalcard', explode(':', $parameters['context'])) && $action == 'builddoc')
+		if (in_array('propalcard', explode(':', $parameters['context'])))
 		{
 			// hack pour stocker la bonne ref pour pouvoir la remettre avant le bloc showdocuments
 			$object->ref_old = $object->ref;

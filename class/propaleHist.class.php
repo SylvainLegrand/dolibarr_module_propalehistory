@@ -41,7 +41,7 @@
 		}
 
 		function getObject() {
-@			$code = gzinflate(base64_decode($this->serialized_parent_propale));
+			$code = gzinflate(base64_decode($this->serialized_parent_propale));
 			if($code === false) {
 				$code = $this->serialized_parent_propale;
 			}
