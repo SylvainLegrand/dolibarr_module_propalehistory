@@ -125,9 +125,10 @@ class ActionsPropalehistory
 
 	function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
 	{
-		if (in_array('propalcard', explode(':', $parameters['context'])))
+		if (in_array('propalcard', explode(':', $parameters['context'])) && $action != 'confirm_validate')
 		{
 			// hack pour remettre la bonne ref pour le bloc showdocuments
+            // on validate proposal object->ref was updated with new ref (automatic numbering) and old ref begins with (PROV)
 			if (!empty($object->ref_old)) $object->ref = $object->ref_old;
 		}
 	}
@@ -276,9 +277,10 @@ class ActionsPropalehistory
              */
 		}
 
-		if (in_array('propalcard', explode(':', $parameters['context'])))
+		if (in_array('propalcard', explode(':', $parameters['context'])) && $action != 'confirm_validate')
 		{
 			// hack pour stocker la bonne ref pour pouvoir la remettre avant le bloc showdocuments
+            // on validate proposal object->ref is still begin with (PROV) and after this hook it will change with a new ref (automatic numbering)
 			$object->ref_old = $object->ref;
 		}
 
