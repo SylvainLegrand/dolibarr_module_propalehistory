@@ -3,8 +3,8 @@ Module104090Desc = Module permettant d'historiser et de versionner les différen
 
 AbricotNotFound = Le module complémentaire gratuit Abricot ne semble pas installé dans votre environnement mais est nécessaire pour utiliser ce module. Merci de le télécharger à l'adresse suivante
 
-ArchiveProposal = Création une nouvelle version de la proposition
-ArchiveProposalCheckboxLabel = Creer une nouvelle version la proposition ?
+ArchiveProposal = Création d'une nouvelle version de la proposition
+ArchiveProposalCheckboxLabel = Créer une nouvelle version de la proposition ?
 AutoArchive = Archiver automatiquement une proposition commerciale lors de sa validation
 
 ConfirmModifyProposal = Confirmer la modification de la proposition
@@ -13,7 +13,7 @@ HistoryVersionSuccessfullArchived = Version de proposition archivée avec succè
 HistoryVersionSuccessfullDelete   = Version historisée supprimée avec succès
 HistoryVersionSuccessfullRestored = Version de proposition restaurée avec succès
 
-PROPALEHISTORY_ARCHIVE_ON_MODIFY = Demander la création d'un nouvelle version à la modification d'une proposition
+PROPALEHISTORY_ARCHIVE_ON_MODIFY = Demander la création d'une nouvelle version à la modification d'une proposition
 PROPALEHISTORY_ARCHIVE_PDF_TOO = Archiver aussi le PDF
 # PROPALEHISTORY_AUTO_ARCHIVE ?
 PROPALEHISTORY_AUTO_ARCHIVE_DESC = Archiver automatiquement une proposition commerciale lors de sa validation
