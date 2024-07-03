@@ -28,7 +28,7 @@
 		print $langs->trans('AbricotNotFound'). ' : <a href="http://wiki.atm-consulting.fr/index.php/Accueil#Module_Abricot" target="_blank">Abricot</a>';
 		exit;
 	}
-	
+
 
 /**
  * Configuration spécifique au module

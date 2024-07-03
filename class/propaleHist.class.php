@@ -63,13 +63,13 @@
 		{
 			global $conf, $db, $langs;
 
-			if (!empty($conf->global->PROPALEHISTORY_ARCHIVE_PDF_TOO)) {
+			if (getDolGlobalString('PROPALEHISTORY_ARCHIVE_PDF_TOO')) {
 				TPropaleHist::archivePDF($object);
 			}
 
             // set proposal version number before saving
             $update_extras = false;
-            if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+            if (getDolGlobalString('PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM')) {
                 $object->array_options['options_propalehistory_version_num'] = self::getVersionNumNext($db, $object->id); // get next version number
                 $update_extras = true;
             } else {
@@ -96,7 +96,7 @@
 
 			$newVersionPropale->save($PDOdb);
 
-            if (!empty($conf->global->PROPALEHISTORY_ARCHIVE_AND_RESET_DATES) && $object->id > 0) {
+            if (getDolGlobalString('PROPALEHISTORY_ARCHIVE_AND_RESET_DATES') && $object->id > 0) {
                 $now = dol_now();
                 $fin_validite = $now + ($object->duree_validite * 24 * 3600);
 
@@ -119,30 +119,30 @@
                     $db->commit();
                 }
 
-                if (!$error && empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE)) {
+                if (!$error && !getDolGlobalString('MAIN_DISABLE_PDF_AUTOUPDATE')) {
                     // reload the object with new lines
                     $ret = $object->fetch($object->id);
                     $ret = $object->fetch_thirdparty($object->socid);
 
                     // Define output language
                     $outputlangs = $langs;
-                    if (!empty($conf->global->MAIN_MULTILANGS)) {
+                    if (getDolGlobalString('MAIN_MULTILANGS')) {
                         $outputlangs = new Translate('', $conf);
                         $newlang = (GETPOST('lang_id', 'aZ09') ? GETPOST('lang_id', 'aZ09') : $object->thirdparty->default_lang);
                         $outputlangs->setDefaultLang($newlang);
                     }
 
                     // PDF
-                    $hidedetails = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
-                    $hidedesc = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
-                    $hideref = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+                    $hidedetails = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS') ? 1 : 0);
+                    $hidedesc = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DESC') ? 1 : 0);
+                    $hideref = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_REF') ? 1 : 0);
 
                     $object->generateDocument($object->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
                 }
             }
 
             // update to next version to work on (only if we work on last version)
-            if (!$error && !empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+            if (!$error && getDolGlobalString('PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM')) {
                 $object->array_options['options_propalehistory_version_num']++;
                 $res = $object->insertExtraFields();
                 if ($res < 0) {
@@ -199,16 +199,16 @@
 
             // Define output language
             $outputlangs = $langs;
-            if (!empty($conf->global->MAIN_MULTILANGS)) {
+            if (getDolGlobalString('MAIN_MULTILANGS')) {
                 $outputlangs = new Translate('', $conf);
                 $newlang = (GETPOST('lang_id', 'aZ09') ? GETPOST('lang_id', 'aZ09') : $object->thirdparty->default_lang);
                 $outputlangs->setDefaultLang($newlang);
             }
 
             // PDF
-            $hidedetails = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
-            $hidedesc = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
-            $hideref = (!empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+            $hidedetails = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS') ? 1 : 0);
+            $hidedesc = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DESC') ? 1 : 0);
+            $hideref = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_REF') ? 1 : 0);
 
             return $object->generateDocument($object->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
@@ -294,10 +294,15 @@
 
 			$object->set_availability($user, $propale->availability_id);
 			$object->set_date($user, $propale->date);
+           if(version_compare( DOL_VERSION, '19.0.0','<')) {
+               $dateLivraison = $propale->delivery_date;
+           } else {
+			   $dateLivraison = $propale->date_livraison;
+		   }
 			if (is_callable(array($object, 'setDeliveryDate'))) {
-				$object->setDeliveryDate($user, $propale->date_livraison);
+				$object->setDeliveryDate($user, $dateLivraison);
 			} else {
-				$object->set_date_livraison($user, $propale->date_livraison);
+				$object->set_date_livraison($user, $dateLivraison);
 			}
 			$object->set_echeance($user, $propale->fin_validite);
 			$object->set_ref_client($user, $propale->ref_client);
@@ -336,7 +341,7 @@
 
             $fromVersionList = false;
 
-            if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+            if (getDolGlobalString('PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM')) {
                 if (!empty($proposal->array_options['options_propalehistory_version_num'])) {
                     $versionNum = $proposal->array_options['options_propalehistory_version_num'];
                 } else {
@@ -385,7 +390,7 @@
             if (!empty($versionList)) {
                 $versionNumLast = count($versionList);
 
-                if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                if (getDolGlobalString('PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM')) {
                     $versionPropale = new TPropaleHist;
 
                     foreach ($versionList as $row) {
@@ -465,7 +470,7 @@
 
 				foreach ($TVersion as &$row) {
                     $versionNumRow = $i;
-                    if (!empty($conf->global->PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM)) {
+                    if (getDolGlobalString('PROPALEHISTORY_RESTORE_KEEP_VERSION_NUM')) {
                         $versionPropale = new TPropaleHist;
                         $versionPropale->serialized_parent_propale = $row->serialized_parent_propale;
                         $propale = $versionPropale->getObject();
@@ -538,16 +543,16 @@
 		        $this->duree_validite=$conf->global->PROPALE_VALIDITY_DURATION;
 
 		        $langs->load("propal");
-		        $this->labelstatut[0]=(! empty($conf->global->PROPAL_STATUS_DRAFT_LABEL) ? $conf->global->PROPAL_STATUS_DRAFT_LABEL : $langs->trans("PropalStatusDraft"));
-		        $this->labelstatut[1]=(! empty($conf->global->PROPAL_STATUS_VALIDATED_LABEL) ? $conf->global->PROPAL_STATUS_VALIDATED_LABEL : $langs->trans("PropalStatusValidated"));
-		        $this->labelstatut[2]=(! empty($conf->global->PROPAL_STATUS_SIGNED_LABEL) ? $conf->global->PROPAL_STATUS_SIGNED_LABEL : $langs->trans("PropalStatusSigned"));
-		        $this->labelstatut[3]=(! empty($conf->global->PROPAL_STATUS_NOTSIGNED_LABEL) ? $conf->global->PROPAL_STATUS_NOTSIGNED_LABEL : $langs->trans("PropalStatusNotSigned"));
-		        $this->labelstatut[4]=(! empty($conf->global->PROPAL_STATUS_BILLED_LABEL) ? $conf->global->PROPAL_STATUS_BILLED_LABEL : $langs->trans("PropalStatusBilled"));
-		        $this->labelstatut_short[0]=(! empty($conf->global->PROPAL_STATUS_DRAFTSHORT_LABEL) ? $conf->global->PROPAL_STATUS_DRAFTSHORT_LABEL : $langs->trans("PropalStatusDraftShort"));
-		        $this->labelstatut_short[1]=(! empty($conf->global->PROPAL_STATUS_VALIDATEDSHORT_LABEL) ? $conf->global->PROPAL_STATUS_VALIDATEDSHORT_LABEL : $langs->trans("Opened"));
-		        $this->labelstatut_short[2]=(! empty($conf->global->PROPAL_STATUS_SIGNEDSHORT_LABEL) ? $conf->global->PROPAL_STATUS_SIGNEDSHORT_LABEL : $langs->trans("PropalStatusSignedShort"));
-		        $this->labelstatut_short[3]=(! empty($conf->global->PROPAL_STATUS_NOTSIGNEDSHORT_LABEL) ? $conf->global->PROPAL_STATUS_NOTSIGNEDSHORT_LABEL : $langs->trans("PropalStatusNotSignedShort"));
-		        $this->labelstatut_short[4]=(! empty($conf->global->PROPAL_STATUS_BILLEDSHORT_LABEL) ? $conf->global->PROPAL_STATUS_BILLEDSHORT_LABEL : $langs->trans("PropalStatusBilledShort"));
+		        $this->labelstatut[0]=(getDolGlobalString('PROPAL_STATUS_DRAFT_LABEL') ? getDolGlobalString('PROPAL_STATUS_DRAFT_LABEL') : $langs->trans("PropalStatusDraft"));
+		        $this->labelstatut[1]=(getDolGlobalString('PROPAL_STATUS_VALIDATED_LABEL') ? getDolGlobalString('PROPAL_STATUS_VALIDATED_LABEL') : $langs->trans("PropalStatusValidated"));
+		        $this->labelstatut[2]=(getDolGlobalString('PROPAL_STATUS_SIGNED_LABEL') ? getDolGlobalString('PROPAL_STATUS_SIGNED_LABEL') : $langs->trans("PropalStatusSigned"));
+		        $this->labelstatut[3]=(getDolGlobalString('PROPAL_STATUS_NOTSIGNED_LABEL') ? getDolGlobalString('PROPAL_STATUS_NOTSIGNED_LABEL') : $langs->trans("PropalStatusNotSigned"));
+		        $this->labelstatut[4]=(getDolGlobalString('PROPAL_STATUS_BILLED_LABEL') ? getDolGlobalString('PROPAL_STATUS_BILLED_LABEL') : $langs->trans("PropalStatusBilled"));
+		        $this->labelstatut_short[0]=(getDolGlobalString('PROPAL_STATUS_DRAFTSHORT_LABEL') ? getDolGlobalString('PROPAL_STATUS_DRAFTSHORT_LABEL') : $langs->trans("PropalStatusDraftShort"));
+		        $this->labelstatut_short[1]=(getDolGlobalString('PROPAL_STATUS_VALIDATEDSHORT_LABEL') ?getDolGlobalString('PROPAL_STATUS_VALIDATEDSHORT_LABEL') : $langs->trans("Opened"));
+		        $this->labelstatut_short[2]=(getDolGlobalString('PROPAL_STATUS_SIGNEDSHORT_LABEL') ? getDolGlobalString('PROPAL_STATUS_SIGNEDSHORT_LABEL') : $langs->trans("PropalStatusSignedShort"));
+		        $this->labelstatut_short[3]=(getDolGlobalString('PROPAL_STATUS_NOTSIGNEDSHORT_LABEL') ? getDolGlobalString('PROPAL_STATUS_NOTSIGNEDSHORT_LABEL') : $langs->trans("PropalStatusNotSignedShort"));
+		        $this->labelstatut_short[4]=(getDolGlobalString('PROPAL_STATUS_BILLEDSHORT_LABEL') ? getDolGlobalString('PROPAL_STATUS_BILLEDSHORT_LABEL') : $langs->trans("PropalStatusBilledShort"));
 		    }
 
 			function getLinesArray($filters = '')

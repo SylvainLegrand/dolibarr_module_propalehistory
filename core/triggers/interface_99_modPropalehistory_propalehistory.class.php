@@ -125,10 +125,11 @@ class InterfacePropalehistory extends DolibarrTriggers
                     return 1;
                 }
             }
-        } elseif ($action == 'PROPAL_VALIDATE' && $conf->global->PROPALEHISTORY_AUTO_ARCHIVE) {
+        } elseif ($action == 'PROPAL_VALIDATE' && getDolGlobalInt('PROPALEHISTORY_AUTO_ARCHIVE')) {
             dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
-
-			define('INC_FROM_DOLIBARR', true);
+			if (!defined('INC_FROM_DOLIBARR')) {
+				define('INC_FROM_DOLIBARR', true);
+			}
 			dol_include_once("/propalehistory/config.php");
 			dol_include_once("/comm/propal/class/propal.class.php");
 			dol_include_once('/propalehistory/class/propaleHist.class.php');
