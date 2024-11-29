@@ -14,6 +14,7 @@ HistoryVersionSuccessfullDelete   = Version was deleted successfully
 HistoryVersionSuccessfullRestored = Version proposal successfully restored
 
 PROPALEHISTORY_ARCHIVE_ON_MODIFY = Ask archiving when modifying a proposal
+PROPALEHISTORY_ARCHIVE_WITH_DATE_NOW = Create a new version with the current date by default
 PROPALEHISTORY_ARCHIVE_PDF_TOO = Archive the PDF too
 # PROPALEHISTORY_AUTO_ARCHIVE ?
 PROPALEHISTORY_AUTO_ARCHIVE_DESC = Automatically archive a sales proposal when it is validated

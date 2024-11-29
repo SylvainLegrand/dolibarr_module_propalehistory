@@ -63,7 +63,7 @@ class modPropalehistory extends DolibarrModules
         // (where XXX is value of numeric property 'numero' of module)
         $this->description = "Gestion de l'historique des propositions commerciales";
         // Possible values for version are: 'development', 'experimental' or version
-        $this->version = '2.6.2';
+        $this->version = '2.7.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \propalehistory\TechATM::getLastModuleVersionUrl($this);
@@ -118,9 +118,9 @@ class modPropalehistory extends DolibarrModules
         // List of modules id to disable if this one is disabled
         $this->requiredby = array();
         // Minimum version of PHP required by module
-        $this->phpmin = array(5, 3);
+        $this->phpmin = array(7, 0);
         // Minimum version of Dolibarr required by module
-        $this->need_dolibarr_version = array(3, 2);
+        $this->need_dolibarr_version = array(16, 0);
         $this->langfiles = array("propalehistory@propalehistory"); // langfiles@mymodule
         // Constants
         // List of particular constants to add when module is enabled
@@ -211,7 +211,7 @@ class modPropalehistory extends DolibarrModules
         include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
         $extrafields = new ExtraFields($this->db);
         // proposal version
-        $result = $extrafields->addExtraField('propalehistory_version_num', 'PropaleHistoryVersionNum', 'int', 1000, '', 'propal', 0, 0, '', '', 0, '', '-4', '', '', 0, 'propalehistory@propalehistory', '$conf->propalehistory->enabled', 0);
+        $result = $extrafields->addExtraField('propalehistory_version_num', 'PropaleHistoryVersionNum', 'int', 1000, '', 'propal', 0, 0, '', '', 0, '', '-4', '', '', 0, 'propalehistory@propalehistory', 'isModEnabled("propalehistory")', 0);
 
         return $this->_init($sql, $options);
     }

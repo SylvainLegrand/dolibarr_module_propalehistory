@@ -69,6 +69,8 @@ $formSetup->newItem('PROPALEHISTORY_ARCHIVE_PDF_TOO')->setAsYesNo();
 // Demander la création d'un nouvelle version à la modification d'une proposition
 $formSetup->newItem('PROPALEHISTORY_ARCHIVE_ON_MODIFY')->setAsYesNo();
 
+// new version is created with date now by default (archive button or archive on modify)
+$formSetup->newItem('PROPALEHISTORY_ARCHIVE_WITH_DATE_NOW')->setAsYesNo();
 
 $formSetup->newItem('EXPERIMENTAL_OPTIONS')->setAsTitle();
 

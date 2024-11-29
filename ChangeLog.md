@@ -10,7 +10,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Release 2.7
+- NEW : Nouvelle version à la modification d'un devis avec choix de la date - *21/10/2024* - 2.7.0
+
 ## Release 2.6
+- FIX : Compatibilité v20 - *14/10/2024* - 2.6.3
 - FIX : Enregistrement du pdf docedit, non changement de ref - *14/06/2024* - 2.6.2  
 - FIX : replace code $_REQUEST  conflict with attachment module - *21/03/2024* - 2.6.1  
 - FIX : Compatibility V19  *21/11/2023* - 2.6.0
@@ -27,7 +31,7 @@ All notable changes to this project will be documented in this file.
 
 - Lorsque cette option est activée :
   - On garde le même comportement lorsqu'on archive une version (ex : si on est sur la version 1 et qu'on archive alors on passe au numéro de version suivante)
-  - Lorsqu'on restaure une version alors on garde son numéro au lieu de restaurer sur la version courante
+  - Lorsqu'on restaure une version alors on garde son numéro au lieu que la version restaurée n'usurpe le numéro de version le plus élevé
   - Par contre lorsqu'on supprime une version alors on ne bouche pas les trous pour pouvoir se repérer avec les numéros de version
 
 

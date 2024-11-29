@@ -55,11 +55,12 @@
         /**
          * Archive proposal
          *
-         * @param   TPDOdb  $PDOdb      PDO connection
-         * @param   Propal  $object     Proposal object
+         * @param   TPDOdb  	$PDOdb      PDO connection
+         * @param   Propal  	$object     Proposal object
+		 * @param   int|string 	$inputDate	[=''] Proposal date from input converted to timestamp
          * @return  int     <0 if KO, >0 if OK
          */
-		static function archiverPropale(&$PDOdb, &$object)
+		static function archiverPropale(&$PDOdb, &$object, $inputDate = '')
 		{
 			global $conf, $db, $langs;
 
@@ -96,15 +97,24 @@
 
 			$newVersionPropale->save($PDOdb);
 
-            if (getDolGlobalString('PROPALEHISTORY_ARCHIVE_AND_RESET_DATES') && $object->id > 0) {
-                $now = dol_now();
-                $fin_validite = $now + ($object->duree_validite * 24 * 3600);
+            if ((getDolGlobalString('PROPALEHISTORY_ARCHIVE_AND_RESET_DATES') || is_numeric($inputDate)) && $object->id > 0) {
+				// set proposal date and compute end validity date
+				if (is_numeric($inputDate)) {
+					$object->date = $inputDate;
+				} else {
+					$object->date = dol_now();
+				}
+				$object->datep = $object->date; // keep compatibility
+				$object->fin_validite = $object->date;
+				if (is_numeric($object->duree_validite)) {
+					$object->fin_validite += $object->duree_validite * 24 * 3600;
+				}
 
                 $db->begin();
 
                 $sql  = "UPDATE " . MAIN_DB_PREFIX . "propal";
-                $sql .= " SET datep = '" . $db->idate($now) . "'";
-                $sql .= ", fin_validite = '" . $db->idate($fin_validite) . "'";
+                $sql .= " SET datep = '" . $db->idate($object->date) . "'";
+                $sql .= ", fin_validite = '" . $db->idate($object->fin_validite) . "'";
                 $sql .= " WHERE rowid = " . $object->id;
 
                 dol_syslog(__METHOD__, LOG_DEBUG);
